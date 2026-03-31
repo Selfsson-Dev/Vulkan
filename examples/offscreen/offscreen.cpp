@@ -21,19 +21,22 @@ public:
 	struct {
 		vkglTF::Model example;
 		vkglTF::Model plane;
+		vkglTF::Model sponza; // <--- ADD THIS LINE
 	} models;
 
 	struct UniformData {
 		glm::mat4 projection;
 		glm::mat4 view;
 		glm::mat4 model;
-		glm::vec4 lightPos = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		glm::vec4 lightPos = glm::vec4(0.0f, 4.0f, 0.0f, 1.0f);
 	} uniformData;
 
 	struct UniformBuffers {
 		vks::Buffer model;
 		vks::Buffer mirror;
 		vks::Buffer offscreen;
+		vks::Buffer sponzaModel;      // <--- NEW
+		vks::Buffer sponzaOffscreen;  // <--- NEW
 	};
 	std::array<UniformBuffers, maxConcurrentFrames> uniformBuffers;
 
@@ -58,6 +61,8 @@ public:
 		VkDescriptorSet offscreen{ VK_NULL_HANDLE };
 		VkDescriptorSet mirror{ VK_NULL_HANDLE };
 		VkDescriptorSet model{ VK_NULL_HANDLE };
+		VkDescriptorSet sponzaModel{ VK_NULL_HANDLE };      // <--- NEW
+		VkDescriptorSet sponzaOffscreen{ VK_NULL_HANDLE };  // <--- NEW
 	};
 	std::array<DescriptorSets, maxConcurrentFrames> descriptorSets;
 
@@ -83,8 +88,8 @@ public:
 	{
 		title = "Offscreen rendering";
 		timerSpeed *= 0.25f;
-		camera.type = Camera::CameraType::lookat;
-		camera.setPosition(glm::vec3(0.0f, 1.0f, -6.0f));
+		camera.type = Camera::CameraType::firstperson;
+		camera.setPosition(glm::vec3(0.0f, 1.0, 2.0f));
 		camera.setRotation(glm::vec3(-2.5f, 0.0f, 0.0f));
 		camera.setRotationSpeed(0.5f);
 		camera.setPerspective(60.0f, (float)width / (float)height, 0.1f, 256.0f);
@@ -116,6 +121,8 @@ public:
 				buffer.model.destroy();
 				buffer.mirror.destroy();
 				buffer.offscreen.destroy();
+				buffer.sponzaModel.destroy();       // <--- NEW
+				buffer.sponzaOffscreen.destroy();   // <--- NEW
 			}
 		}
 	}
@@ -297,16 +304,23 @@ public:
 		const uint32_t glTFLoadingFlags = vkglTF::FileLoadingFlags::PreTransformVertices | vkglTF::FileLoadingFlags::PreMultiplyVertexColors | vkglTF::FileLoadingFlags::FlipY;
 		models.plane.loadFromFile(getAssetPath() + "models/plane.gltf", vulkanDevice, queue, glTFLoadingFlags);
 		models.example.loadFromFile(getAssetPath() + "models/chinesedragon.gltf", vulkanDevice, queue, glTFLoadingFlags);
+
+		models.sponza.loadFromFile(getAssetPath() + "models/sponza/sponza.gltf", vulkanDevice, queue, glTFLoadingFlags);
 	}
 
 	void setupDescriptors()
 	{
 		// Pool
-		std::vector<VkDescriptorPoolSize> poolSizes = {
+		/*std::vector<VkDescriptorPoolSize> poolSizes = {
 			vks::initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, maxConcurrentFrames * 3),
 			vks::initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, maxConcurrentFrames * 2)
 		};
-		VkDescriptorPoolCreateInfo descriptorPoolInfo = vks::initializers::descriptorPoolCreateInfo(poolSizes, maxConcurrentFrames * 3);
+		VkDescriptorPoolCreateInfo descriptorPoolInfo = vks::initializers::descriptorPoolCreateInfo(poolSizes, maxConcurrentFrames * 3);*/
+		std::vector<VkDescriptorPoolSize> poolSizes = {
+			vks::initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, maxConcurrentFrames * 5), // <--- CHANGE 3 to 5
+			vks::initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, maxConcurrentFrames * 2)
+		};
+		VkDescriptorPoolCreateInfo descriptorPoolInfo = vks::initializers::descriptorPoolCreateInfo(poolSizes, maxConcurrentFrames * 5); // <--- CHANGE 3 to 5
 		VK_CHECK_RESULT(vkCreateDescriptorPool(device, &descriptorPoolInfo, nullptr, &descriptorPool));
 
 		// Layout
@@ -362,6 +376,20 @@ public:
 				vks::initializers::writeDescriptorSet(descriptorSets[i].offscreen, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, &uniformBuffers[i].offscreen.descriptor)
 			};
 			vkUpdateDescriptorSets(device, static_cast<uint32_t>(offScreenWriteDescriptorSets.size()), offScreenWriteDescriptorSets.data(), 0, nullptr);
+
+			// Sponza Model
+			VK_CHECK_RESULT(vkAllocateDescriptorSets(device, &allocInfo, &descriptorSets[i].sponzaModel));
+			std::vector<VkWriteDescriptorSet> sponzaModelWriteDescriptorSets = {
+				vks::initializers::writeDescriptorSet(descriptorSets[i].sponzaModel, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, &uniformBuffers[i].sponzaModel.descriptor)
+			};
+			vkUpdateDescriptorSets(device, static_cast<uint32_t>(sponzaModelWriteDescriptorSets.size()), sponzaModelWriteDescriptorSets.data(), 0, nullptr);
+
+			// Sponza Offscreen
+			VK_CHECK_RESULT(vkAllocateDescriptorSets(device, &allocInfo, &descriptorSets[i].sponzaOffscreen));
+			std::vector<VkWriteDescriptorSet> sponzaOffscreenWriteDescriptorSets = {
+				vks::initializers::writeDescriptorSet(descriptorSets[i].sponzaOffscreen, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, &uniformBuffers[i].sponzaOffscreen.descriptor)
+			};
+			vkUpdateDescriptorSets(device, static_cast<uint32_t>(sponzaOffscreenWriteDescriptorSets.size()), sponzaOffscreenWriteDescriptorSets.data(), 0, nullptr);	
 		}
 	}
 
@@ -439,6 +467,12 @@ public:
 			// Offscreen vertex shader uniform buffer block
 			VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &buffer.offscreen, sizeof(UniformData)));
 			VK_CHECK_RESULT(buffer.offscreen.map());
+
+			VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &buffer.sponzaModel, sizeof(UniformData)));
+			VK_CHECK_RESULT(buffer.sponzaModel.map());
+
+			VK_CHECK_RESULT(vulkanDevice->createBuffer(VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &buffer.sponzaOffscreen, sizeof(UniformData)));
+			VK_CHECK_RESULT(buffer.sponzaOffscreen.map());
 		}
 	}
 
@@ -467,6 +501,13 @@ public:
 		uniformData.model = glm::translate(uniformData.model, modelPosition);
 		memcpy(uniformBuffers[currentBuffer].offscreen.mapped, &uniformData, sizeof(UniformData));
 
+		// Sponza Main Scene (No rotation)
+		uniformData.model = glm::mat4(1.0f);
+		memcpy(uniformBuffers[currentBuffer].sponzaModel.mapped, &uniformData, sizeof(UniformData));
+
+		uniformData.model = glm::mat4(1.0f);
+		uniformData.model = glm::scale(uniformData.model, glm::vec3(1.0f, -1.0f, 1.0f));
+		memcpy(uniformBuffers[currentBuffer].sponzaOffscreen.mapped, &uniformData, sizeof(UniformData));
 	}
 
 	void updateUniformBufferOffscreen()
@@ -521,6 +562,10 @@ public:
 			vkCmdBindPipeline(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.shadedOffscreen);
 			models.example.draw(cmdBuffer);
 
+			// <--- 1. BIND SPONZA'S OFFSCREEN DESCRIPTOR SET HERE --->
+			vkCmdBindDescriptorSets(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayouts.shaded, 0, 1, &descriptorSets[currentBuffer].sponzaOffscreen, 0, nullptr);
+			models.sponza.draw(cmdBuffer);
+
 			vkCmdEndRenderPass(cmdBuffer);
 		}
 
@@ -565,10 +610,15 @@ public:
 				vkCmdBindDescriptorSets(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayouts.textured, 0, 1, &descriptorSets[currentBuffer].mirror, 0, nullptr);
 				vkCmdBindPipeline(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.mirror);
 				models.plane.draw(cmdBuffer);
+
 				// Model
 				vkCmdBindDescriptorSets(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayouts.shaded, 0, 1, &descriptorSets[currentBuffer].model, 0, nullptr);
 				vkCmdBindPipeline(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.shaded);
 				models.example.draw(cmdBuffer);
+
+				// <--- 2. BIND SPONZA'S MAIN DESCRIPTOR SET HERE --->
+				vkCmdBindDescriptorSets(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayouts.shaded, 0, 1, &descriptorSets[currentBuffer].sponzaModel, 0, nullptr);
+				models.sponza.draw(cmdBuffer);
 			}
 
 			drawUI(cmdBuffer);

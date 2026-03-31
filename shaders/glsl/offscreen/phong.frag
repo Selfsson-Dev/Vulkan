@@ -2,24 +2,33 @@
 
 layout (location = 0) in vec3 inNormal;
 layout (location = 1) in vec3 inColor;
-layout (location = 2) in vec3 inEyePos;
+layout (location = 2) in vec3 inViewVec;
 layout (location = 3) in vec3 inLightVec;
 
 layout (location = 0) out vec4 outFragColor;
 
 void main() 
 {
-	vec3 Eye = normalize(-inEyePos);
-	vec3 Reflected = normalize(reflect(-inLightVec, inNormal)); 
+	// Normalize our interpolated vectors
+	vec3 N = normalize(inNormal);
+	vec3 L = normalize(inLightVec);
+	vec3 V = normalize(inViewVec);
+	vec3 R = reflect(-L, N); 
 
-	vec4 IAmbient = vec4(0.1, 0.1, 0.1, 1.0);
-	vec4 IDiffuse = vec4(max(dot(inNormal, inLightVec), 0.0));
-	float specular = 0.75;
-	vec4 ISpecular = vec4(0.0);
-	if (dot(inEyePos, inNormal) < 0.0)
+	// Ambient lighting (bumped slightly so the dark areas aren't pitch black)
+	vec3 ambient = vec3(0.15) * inColor;
+
+	// Diffuse lighting
+	float diff = max(dot(N, L), 0.0);
+	vec3 diffuse = diff * inColor;
+	
+	// Specular lighting
+	vec3 specular = vec3(0.0);
+	if (diff > 0.0) // Only compute specular if the light is hitting the front of the face
 	{
-		ISpecular = vec4(0.5, 0.5, 0.5, 1.0) * pow(max(dot(Reflected, Eye), 0.0), 16.0) * specular; 
+		float spec = pow(max(dot(R, V), 0.0), 32.0); // 32.0 is the shininess factor
+		specular = vec3(0.5) * spec; // 0.5 limits the bright white reflection intensity
 	}
 
-	outFragColor = vec4((IAmbient + IDiffuse) * vec4(inColor, 1.0) + ISpecular);
+	outFragColor = vec4(ambient + diffuse + specular, 1.0);
 }

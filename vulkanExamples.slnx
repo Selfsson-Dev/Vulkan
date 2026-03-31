@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Solution>
+	<Configurations>
+		<BuildType Name="Debug"/>
+		<BuildType Name="Release"/>
+		<BuildType Name="MinSizeRel"/>
+		<BuildType Name="RelWithDebInfo"/>
+		<Platform Name="x64"/>
+	</Configurations>
+	<Project Path="ALL_BUILD.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="b8ef669c-77c3-31f6-a683-05773d0256c1" DefaultStartup="true">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+		<BuildDependency Project="examples/bloom.vcxproj"/>
+		<BuildDependency Project="examples/bufferdeviceaddress.vcxproj"/>
+		<BuildDependency Project="examples/computecloth.vcxproj"/>
+		<BuildDependency Project="examples/computecullandlod.vcxproj"/>
+		<BuildDependency Project="examples/computeheadless.vcxproj"/>
+		<BuildDependency Project="examples/computenbody.vcxproj"/>
+		<BuildDependency Project="examples/computeparticles.vcxproj"/>
+		<BuildDependency Project="examples/computeraytracing.vcxproj"/>
+		<BuildDependency Project="examples/computeshader.vcxproj"/>
+		<BuildDependency Project="examples/conditionalrender.vcxproj"/>
+		<BuildDependency Project="examples/conservativeraster.vcxproj"/>
+		<BuildDependency Project="examples/debugprintf.vcxproj"/>
+		<BuildDependency Project="examples/debugutils.vcxproj"/>
+		<BuildDependency Project="examples/deferred.vcxproj"/>
+		<BuildDependency Project="examples/deferredmultisampling.vcxproj"/>
+		<BuildDependency Project="examples/deferredshadows.vcxproj"/>
+		<BuildDependency Project="examples/descriptorbuffer.vcxproj"/>
+		<BuildDependency Project="examples/descriptorheap.vcxproj"/>
+		<BuildDependency Project="examples/descriptorindexing.vcxproj"/>
+		<BuildDependency Project="examples/descriptorsets.vcxproj"/>
+		<BuildDependency Project="examples/displacement.vcxproj"/>
+		<BuildDependency Project="examples/distancefieldfonts.vcxproj"/>
+		<BuildDependency Project="examples/dynamicrendering.vcxproj"/>
+		<BuildDependency Project="examples/dynamicrenderingmultisampling.vcxproj"/>
+		<BuildDependency Project="examples/dynamicstate.vcxproj"/>
+		<BuildDependency Project="examples/dynamicuniformbuffer.vcxproj"/>
+		<BuildDependency Project="examples/fragmentshaderbarycentrics.vcxproj"/>
+		<BuildDependency Project="examples/gears.vcxproj"/>
+		<BuildDependency Project="examples/geometryshader.vcxproj"/>
+		<BuildDependency Project="examples/gltfloading.vcxproj"/>
+		<BuildDependency Project="examples/gltfscenerendering.vcxproj"/>
+		<BuildDependency Project="examples/gltfskinning.vcxproj"/>
+		<BuildDependency Project="examples/graphicspipelinelibrary.vcxproj"/>
+		<BuildDependency Project="examples/hdr.vcxproj"/>
+		<BuildDependency Project="examples/hostimagecopy.vcxproj"/>
+		<BuildDependency Project="examples/imgui.vcxproj"/>
+		<BuildDependency Project="examples/indirectdraw.vcxproj"/>
+		<BuildDependency Project="examples/inlineuniformblocks.vcxproj"/>
+		<BuildDependency Project="examples/inputattachments.vcxproj"/>
+		<BuildDependency Project="examples/instancing.vcxproj"/>
+		<BuildDependency Project="examples/meshshader.vcxproj"/>
+		<BuildDependency Project="examples/multisampling.vcxproj"/>
+		<BuildDependency Project="examples/multisamplingalphatocoverage.vcxproj"/>
+		<BuildDependency Project="examples/multithreading.vcxproj"/>
+		<BuildDependency Project="examples/multiview.vcxproj"/>
+		<BuildDependency Project="examples/negativeviewportheight.vcxproj"/>
+		<BuildDependency Project="examples/occlusionquery.vcxproj"/>
+		<BuildDependency Project="examples/offscreen.vcxproj"/>
+		<BuildDependency Project="examples/oit.vcxproj"/>
+		<BuildDependency Project="examples/parallaxmapping.vcxproj"/>
+		<BuildDependency Project="examples/particlesystem.vcxproj"/>
+		<BuildDependency Project="examples/pbrbasic.vcxproj"/>
+		<BuildDependency Project="examples/pbribl.vcxproj"/>
+		<BuildDependency Project="examples/pbrtexture.vcxproj"/>
+		<BuildDependency Project="examples/pipelines.vcxproj"/>
+		<BuildDependency Project="examples/pipelinestatistics.vcxproj"/>
+		<BuildDependency Project="examples/pushconstants.vcxproj"/>
+		<BuildDependency Project="examples/pushdescriptors.vcxproj"/>
+		<BuildDependency Project="examples/radialblur.vcxproj"/>
+		<BuildDependency Project="examples/rayquery.vcxproj"/>
+		<BuildDependency Project="examples/raytracingbasic.vcxproj"/>
+		<BuildDependency Project="examples/raytracingcallable.vcxproj"/>
+		<BuildDependency Project="examples/raytracinggltf.vcxproj"/>
+		<BuildDependency Project="examples/raytracingintersection.vcxproj"/>
+		<BuildDependency Project="examples/raytracingpositionfetch.vcxproj"/>
+		<BuildDependency Project="examples/raytracingreflections.vcxproj"/>
+		<BuildDependency Project="examples/raytracingsbtdata.vcxproj"/>
+		<BuildDependency Project="examples/raytracingshadows.vcxproj"/>
+		<BuildDependency Project="examples/raytracingtextures.vcxproj"/>
+		<BuildDependency Project="examples/renderheadless.vcxproj"/>
+		<BuildDependency Project="examples/screenshot.vcxproj"/>
+		<BuildDependency Project="examples/shaderobjects.vcxproj"/>
+		<BuildDependency Project="examples/shadowmapping.vcxproj"/>
+		<BuildDependency Project="examples/shadowmappingcascade.vcxproj"/>
+		<BuildDependency Project="examples/shadowmappingomni.vcxproj"/>
+		<BuildDependency Project="examples/specializationconstants.vcxproj"/>
+		<BuildDependency Project="examples/sphericalenvmapping.vcxproj"/>
+		<BuildDependency Project="examples/ssao.vcxproj"/>
+		<BuildDependency Project="examples/stencilbuffer.vcxproj"/>
+		<BuildDependency Project="examples/subpasses.vcxproj"/>
+		<BuildDependency Project="examples/terraintessellation.vcxproj"/>
+		<BuildDependency Project="examples/tessellation.vcxproj"/>
+		<BuildDependency Project="examples/textoverlay.vcxproj"/>
+		<BuildDependency Project="examples/texture.vcxproj"/>
+		<BuildDependency Project="examples/texture3d.vcxproj"/>
+		<BuildDependency Project="examples/texturearray.vcxproj"/>
+		<BuildDependency Project="examples/texturecubemap.vcxproj"/>
+		<BuildDependency Project="examples/texturecubemaparray.vcxproj"/>
+		<BuildDependency Project="examples/texturemipmapgen.vcxproj"/>
+		<BuildDependency Project="examples/texturesparseresidency.vcxproj"/>
+		<BuildDependency Project="examples/timelinesemaphore.vcxproj"/>
+		<BuildDependency Project="examples/triangle.vcxproj"/>
+		<BuildDependency Project="examples/trianglevulkan13.vcxproj"/>
+		<BuildDependency Project="examples/variablerateshading.vcxproj"/>
+		<BuildDependency Project="examples/vertexattributes.vcxproj"/>
+		<BuildDependency Project="examples/viewportarray.vcxproj"/>
+		<BuildDependency Project="examples/vulkanscene.vcxproj"/>
+		<Build Solution="Debug|*" Project="false"/>
+		<Build Solution="Release|*" Project="false"/>
+		<Build Solution="MinSizeRel|*" Project="false"/>
+		<Build Solution="RelWithDebInfo|*" Project="false"/>
+	</Project>
+	<Project Path="ZERO_CHECK.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="0ef0b365-937d-3e80-a3dd-dcc921183086"/>
+	<Project Path="base/base.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="4ce46a2f-091c-3093-b8c1-09771b66da43">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+	</Project>
+	<Project Path="examples/bloom.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="4ad9d12c-8af5-3d3a-88e8-275d2f42fac4">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/bufferdeviceaddress.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="34efb1b0-0ac3-3cc1-956a-a44515dcfef3">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/computecloth.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="84d9493b-a3f0-3e4f-910a-e553a20e8401">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/computecullandlod.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="a3c9061d-7669-353e-a5f6-48adcba3ec10">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/computeheadless.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="d98fbfb8-1587-30e5-9a59-7695151d2ca5">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/computenbody.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="81aa7b81-4dd3-346a-ae5e-5f17391d70da">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/computeparticles.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="eadee357-dca2-3fe9-a4ff-cb9fd1fc4234">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/computeraytracing.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="968bb6c7-05ff-3393-9dfb-1f18e778a6c8">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/computeshader.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="c4e5caf9-1a7f-3645-bfa9-02a1c35c119a">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/conditionalrender.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="b33a67b1-4bc8-351f-a897-9b1a09c4e602">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/conservativeraster.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="da7be6c0-0718-3890-93c0-cceb6072fef2">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/debugprintf.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="37704b76-be47-3211-8e1c-be5b23aea70b">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/debugutils.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="d6cb8679-2fe2-3b9d-a6fa-00e1d6026fbf">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/deferred.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="7b8cfdf1-4087-3b64-8a5b-b2f6d83174b0">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/deferredmultisampling.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="b19d7c08-79de-3038-b208-04fd440b9df9">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/deferredshadows.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="48b3545d-9a0b-3da5-a759-64229e62466f">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/descriptorbuffer.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="bf721988-5d1c-323a-8c06-1c74d786ee44">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/descriptorheap.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="fdc8e415-82b7-3b62-843c-6a1921f5c82d">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/descriptorindexing.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="08703f27-31cb-34a9-a4eb-22219baa083a">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/descriptorsets.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="879d623f-898c-3644-b3bb-c2bff82f4182">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/displacement.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="13b628b7-6fc5-364e-99b9-105735b0ab51">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/distancefieldfonts.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="94f00c2d-c93a-3821-8c11-5db6d70c46d0">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/dynamicrendering.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="d5f5f395-e207-3c43-b79b-7b6a4ba21c51">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/dynamicrenderingmultisampling.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="57e4907f-e481-34b7-91a0-e330736069b6">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/dynamicstate.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="9ce80b90-d8f5-3c60-87fd-6f1f60bd73c9">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/dynamicuniformbuffer.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="f47fe6f8-3ce8-32d7-b93b-bf236eca7292">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/fragmentshaderbarycentrics.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="c2edf806-7700-34d3-9a3d-d7bf5bf68087">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/gears.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="30623086-befe-36e1-98f3-7e013b55c5ee">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/geometryshader.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="47e1c4a3-6b40-3b3c-8ab0-cbc19e04711b">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/gltfloading.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="a3025d7b-7d7b-3585-804b-3b1873db1c43">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/gltfscenerendering.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="1eeb0eba-c89f-36fe-89ed-5b162a14b01b">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/gltfskinning.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="fb4e5d5f-76a4-3fee-b4b0-176eb8c55ae1">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/graphicspipelinelibrary.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="0c545a84-ff20-3271-868f-091542e56bd1">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/hdr.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="64b95216-808a-3f35-ba79-fe295fa7110f">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/hostimagecopy.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="1673d3b5-9d9b-3a60-bde5-be10ab8bada0">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/imgui.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="75a52bc3-c6bf-30ed-abd2-045fddab4e1c">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/indirectdraw.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="a6663ae2-5425-3f57-9684-d69847de07b5">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/inlineuniformblocks.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="c11a7f9d-8e72-36bb-9431-aea0b932a3e3">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/inputattachments.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="b95d155e-0d28-3fe1-8354-b5c8004f6a71">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/instancing.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="19fb4f95-27b7-3426-8434-ba207fceff62">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/meshshader.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="fdce94a0-6cfc-3e6c-a4ee-0ebea53aa6b3">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/multisampling.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="76650324-236c-3d9e-a363-64150f47c9b5">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/multisamplingalphatocoverage.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="1a02d064-3182-31d1-a73f-6cbbde25c373">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/multithreading.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="9dad50b2-7d00-352a-bb76-509bb9897a9b">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/multiview.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="cb57df9c-42f9-3606-8d78-a9b9b40f0116">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/negativeviewportheight.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="ace5adef-ca28-300c-b296-ce4b40f91f87">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/occlusionquery.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="83d076e9-58b7-3511-b8ad-3a8d073a949b">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/offscreen.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="cd102cef-8c82-3411-b470-eda5202e627a">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/oit.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="4a427f78-ebe5-352c-ac75-56520045293d">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/parallaxmapping.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="56015652-dbd3-3756-844f-16ed28c443c2">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/particlesystem.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="cde3cfda-becf-3a60-915d-a5049ac9006c">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/pbrbasic.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="6e28c5ee-4a78-3358-b996-9d01c265c28e">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/pbribl.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="36bcbcea-7b28-357c-9afd-8f3a070aebf8">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/pbrtexture.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="fa1139c5-b21c-39bc-b6ec-3b6e3eb42d05">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/pipelines.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="a6ce28c9-14d2-3cfd-9798-cba59853cd86">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/pipelinestatistics.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="f1e2b147-fa07-3860-bc1b-e735fcc0e609">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/pushconstants.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="14d9c3eb-0f96-375a-9d6f-b8307003daeb">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/pushdescriptors.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="dcf16258-3bec-3e24-a592-7e2a93aa8b2e">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/radialblur.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="0a6da242-c747-35ce-878c-b0b47d8f7130">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/rayquery.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="1c9e4597-71bf-397d-af1d-e67541a357c1">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/raytracingbasic.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="3ce15dc8-4091-34f2-b829-465094ead57d">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/raytracingcallable.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="9b0da699-36c6-35d2-a918-9c1f9ef5c328">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/raytracinggltf.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="c2f4e577-269a-35cf-8ea2-ed2a72b958ff">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/raytracingintersection.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="6e1fb33a-1754-32b4-a4c7-4fe2a707eeb1">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/raytracingpositionfetch.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="e5c433a8-8642-3a82-aeb0-51926c2d3fa1">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/raytracingreflections.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="3bb68977-f560-30ef-a825-c27b52508983">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/raytracingsbtdata.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="6dc32666-1755-3894-802a-9c04cd6b7757">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/raytracingshadows.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="73d9afb3-fe8c-36d2-b185-08587c4c6603">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/raytracingtextures.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="b91bc548-237c-3713-94bd-e4ccf9a3de73">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/renderheadless.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="51aeed7e-21cd-3019-b402-53f99989f570">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/screenshot.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="d9149766-2b85-355b-8337-b341f10025aa">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/shaderobjects.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="cc26e2b7-d52e-3203-8652-4b088d2c75c0">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/shadowmapping.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="aff1551a-fefb-3de1-927f-650f8f069729">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/shadowmappingcascade.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="73cb6365-e493-3ad9-b86a-4619757d4107">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/shadowmappingomni.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="9041f817-0098-3a15-b96a-0ba83e0cbb29">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/specializationconstants.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="a70480c3-3d32-3dfe-a7fd-ed1ae7379ef7">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/sphericalenvmapping.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="83f8b44e-84c1-325a-a151-16342c0cad65">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/ssao.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="e8a4a987-85d5-3378-b98a-fd0eb7871ef2">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/stencilbuffer.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="3e92d673-5952-371b-a9d7-f547797679a8">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/subpasses.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="5fc71c2b-65ab-35e0-a53b-6920cf5c4595">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/terraintessellation.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="49ef8fe7-2cc4-3aba-abc8-5a24012635d5">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/tessellation.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="5ac4cf43-0c18-37ad-b57c-d703a7c9cca0">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/textoverlay.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="26c3ccbd-a51a-3b77-806b-d030bf8502a0">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/texture.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="efa81f95-711a-3f84-a4b9-db30dece1045">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/texture3d.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="92802ae5-1c17-3d94-96b7-60b69dc07370">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/texturearray.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="10fe1957-bbb5-33ac-990e-fb1edf4acac6">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/texturecubemap.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="dd840cc2-8997-306f-ae72-a095e3a41e81">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/texturecubemaparray.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="1a5547e3-e238-3a53-bbdf-cf1ea0cb78ce">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/texturemipmapgen.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="0dc3f435-df3d-3074-bfb1-a7ca68b55fde">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/texturesparseresidency.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="765e744c-4305-3c18-b031-0af12d3e76d4">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/timelinesemaphore.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="28391c0a-0960-3d2a-9c6a-21b9dd643cc2">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/triangle.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="dc070427-fa70-3dbf-aa26-b3104c438f61">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/trianglevulkan13.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="97d12268-af41-30f5-8dc0-e8394bb5675c">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/variablerateshading.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="a191a3a5-db53-38e0-9712-3f14fb6cba6b">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/vertexattributes.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="9915804b-406d-38de-a4b9-a73d196bebd2">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/viewportarray.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="d8f1209b-dd48-3339-82bf-c4adc6277a4f">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+	<Project Path="examples/vulkanscene.vcxproj" Type="8bc9ceb8-8b4a-11d0-8d11-00a0c91bc942" Id="872f106d-6a07-3b0e-9740-cbab8dcfd3ae">
+		<BuildDependency Project="ZERO_CHECK.vcxproj"/>
+		<BuildDependency Project="base/base.vcxproj"/>
+	</Project>
+</Solution>

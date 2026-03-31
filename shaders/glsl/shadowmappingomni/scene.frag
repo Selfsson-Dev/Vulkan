@@ -1,40 +1,57 @@
 #version 450
 
-layout (binding = 1) uniform samplerCube shadowCubeMap;
+// Array of 2 shadow map samplers
+layout (binding = 1) uniform samplerCube shadowCubeMaps[2];
 
 layout (location = 0) in vec3 inNormal;
 layout (location = 1) in vec3 inColor;
 layout (location = 2) in vec3 inEyePos;
-layout (location = 3) in vec3 inLightVec;
-layout (location = 4) in vec3 inWorldPos;
-layout (location = 5) in vec3 inLightPos;
+layout (location = 3) in vec3 inWorldPos;
+layout (location = 4) in vec4 inLightPos0;
+layout (location = 5) in vec4 inLightPos1;
 
 layout (location = 0) out vec4 outFragColor;
 
 #define EPSILON 0.15
 #define SHADOW_OPACITY 0.5
 
+// Reusable function to calculate lighting and shadows per light
+vec3 calcPointLight(vec4 light, samplerCube shadowMap, vec3 normal) 
+{
+	vec3 lightPos = light.xyz;
+	float brightness = light.w; // Extract the brightness!
+	
+	vec3 lightDir = normalize(lightPos - inWorldPos);
+	
+	// Calculate attenuation (how fast the light fades over distance)
+	// Using inverse-square law for realistic physical light falloff
+	float dist = length(lightPos - inWorldPos);
+	float attenuation = 1.0 / (dist * dist);
+	
+	// Apply both brightness and attenuation to the diffuse color
+	vec3 IDiffuse = vec3(brightness * attenuation) * max(dot(normal, lightDir), 0.0);
+	vec3 diffuseColor = IDiffuse * inColor;
+	
+	// Shadow calculation
+	vec3 lightVec = inWorldPos - lightPos;
+	float sampledDist = texture(shadowMap, lightVec).r;
+	
+	float shadow = (dist <= sampledDist + EPSILON) ? 1.0 : SHADOW_OPACITY;
+	
+	return diffuseColor * shadow;
+}
+
 void main() 
 {
-	// Lighting
 	vec3 N = normalize(inNormal);
-	vec3 L = normalize(vec3(1.0));	
+	vec3 finalColor = vec3(0.01); // Lowered base ambient so the lights pop more!
 	
-	vec3 Eye = normalize(-inEyePos);
-	vec3 Reflected = normalize(reflect(-inLightVec, inNormal)); 
+	finalColor += calcPointLight(inLightPos0, shadowCubeMaps[0], N);
+	finalColor += calcPointLight(inLightPos1, shadowCubeMaps[1], N);
 
-	vec4 IAmbient = vec4(vec3(0.05), 1.0);
-	vec4 IDiffuse = vec4(1.0) * max(dot(inNormal, inLightVec), 0.0);
-
-	outFragColor = vec4(IAmbient + IDiffuse * vec4(inColor, 1.0));		
-		
-	// Shadow
-	vec3 lightVec = inWorldPos - inLightPos;
-    float sampledDist = texture(shadowCubeMap, lightVec).r;
-    float dist = length(lightVec);
-
-	// Check if fragment is in shadow
-    float shadow = (dist <= sampledDist + EPSILON) ? 1.0 : SHADOW_OPACITY;
-
-	outFragColor.rgb *= shadow;
+	// Simple tone mapping to prevent colors from burning out to pure white instantly
+	// (Optional, but helps when using high brightness values)
+	finalColor = finalColor / (finalColor + vec3(1.0));
+	
+	outFragColor = vec4(finalColor, 1.0);
 }
