@@ -1,7 +1,11 @@
 #version 450
 
-// Array of 2 shadow map samplers
-layout (binding = 1) uniform samplerCube shadowCubeMaps[2];
+// Set 0: Global lighting and shadows
+layout (binding = 1) uniform samplerCube shadowCubeMap0;
+layout (binding = 2) uniform samplerCube shadowCubeMap1;
+
+// Set 1: Automatically bound glTF materials (Binding 0 is always Base Color!)
+layout (set = 1, binding = 0) uniform sampler2D colorMap;
 
 layout (location = 0) in vec3 inNormal;
 layout (location = 1) in vec3 inColor;
@@ -9,33 +13,28 @@ layout (location = 2) in vec3 inEyePos;
 layout (location = 3) in vec3 inWorldPos;
 layout (location = 4) in vec4 inLightPos0;
 layout (location = 5) in vec4 inLightPos1;
+layout (location = 6) in vec2 inUV;
 
 layout (location = 0) out vec4 outFragColor;
 
 #define EPSILON 0.15
 #define SHADOW_OPACITY 0.5
 
-// Reusable function to calculate lighting and shadows per light
-vec3 calcPointLight(vec4 light, samplerCube shadowMap, vec3 normal) 
+vec3 calcPointLight(vec4 light, samplerCube shadowMap, vec3 normal, vec4 texColor) 
 {
 	vec3 lightPos = light.xyz;
-	float brightness = light.w; // Extract the brightness!
+	float brightness = light.w;
 	
 	vec3 lightDir = normalize(lightPos - inWorldPos);
 	
-	// Calculate attenuation (how fast the light fades over distance)
-	// Using inverse-square law for realistic physical light falloff
 	float dist = length(lightPos - inWorldPos);
 	float attenuation = 1.0 / (dist * dist);
 	
-	// Apply both brightness and attenuation to the diffuse color
 	vec3 IDiffuse = vec3(brightness * attenuation) * max(dot(normal, lightDir), 0.0);
-	vec3 diffuseColor = IDiffuse * inColor;
+	vec3 diffuseColor = IDiffuse * texColor.rgb * inColor;
 	
-	// Shadow calculation
 	vec3 lightVec = inWorldPos - lightPos;
 	float sampledDist = texture(shadowMap, lightVec).r;
-	
 	float shadow = (dist <= sampledDist + EPSILON) ? 1.0 : SHADOW_OPACITY;
 	
 	return diffuseColor * shadow;
@@ -43,14 +42,22 @@ vec3 calcPointLight(vec4 light, samplerCube shadowMap, vec3 normal)
 
 void main() 
 {
-	vec3 N = normalize(inNormal);
-	vec3 finalColor = vec3(0.01); // Lowered base ambient so the lights pop more!
+	// Sample the material's base color texture
+	vec4 texColor = texture(colorMap, inUV);
 	
-	finalColor += calcPointLight(inLightPos0, shadowCubeMaps[0], N);
-	finalColor += calcPointLight(inLightPos1, shadowCubeMaps[1], N);
+	// Sponza has vines and fences that use alpha cutoffs.
+	// If the texture is transparent here, throw the pixel away!
+	if (texColor.a < 0.5) {
+		discard;
+	}
 
-	// Simple tone mapping to prevent colors from burning out to pure white instantly
-	// (Optional, but helps when using high brightness values)
+	vec3 N = normalize(inNormal);
+	vec3 finalColor = vec3(0.01); // Subtle ambient glow
+	
+	finalColor += calcPointLight(inLightPos0, shadowCubeMap0, N, texColor);
+	finalColor += calcPointLight(inLightPos1, shadowCubeMap1, N, texColor);
+	
+	// Tone mapping to prevent washing out
 	finalColor = finalColor / (finalColor + vec3(1.0));
 	
 	outFragColor = vec4(finalColor, 1.0);

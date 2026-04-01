@@ -3,8 +3,6 @@
 * Modified for 2 Point Lights and Sponza exclusively.
 *
 * Copyright (C) 2016-2025 by Sascha Willems - www.saschawillems.de
-*
-* This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 */
 
 #include "vulkanexamplebase.h"
@@ -22,8 +20,8 @@ public:
 
 	// Set your exact light positions here!
 	glm::vec4 lightPos[2] = {
-		glm::vec4(-3.8f, -3.5f, 0.0f, 20.0f),
-		glm::vec4(4.8f, -3.5f, 0.0f, 20.0f) 
+		glm::vec4(-3.8f, -3.5f, 0.0f, 40.0f),
+		glm::vec4(4.8f, -3.5f, 0.0f, 40.0f)
 	};
 
 	struct UniformDataScene {
@@ -65,6 +63,7 @@ public:
 
 	VkDescriptorSetLayout descriptorSetLayoutMain{ VK_NULL_HANDLE };
 	VkDescriptorSetLayout descriptorSetLayoutOffscreen{ VK_NULL_HANDLE };
+	VkDescriptorSetLayout descriptorSetLayoutGLTF{ VK_NULL_HANDLE }; // <--- ADDED GLTF LAYOUT
 
 	// 2 Shadow Cubemaps
 	std::array<vks::Texture, 2> shadowCubeMaps;
@@ -123,6 +122,7 @@ public:
 			vkDestroyPipelineLayout(device, pipelineLayouts.offscreen, nullptr);
 			vkDestroyDescriptorSetLayout(device, descriptorSetLayoutMain, nullptr);
 			vkDestroyDescriptorSetLayout(device, descriptorSetLayoutOffscreen, nullptr);
+			vkDestroyDescriptorSetLayout(device, descriptorSetLayoutGLTF, nullptr); // <--- DESTROY GLTF LAYOUT
 
 			for (auto& buffer : uniformBuffers) {
 				buffer.sponzaModel.destroy();
@@ -247,11 +247,31 @@ public:
 		subpass.pColorAttachments = &colorReference;
 		subpass.pDepthStencilAttachment = &depthReference;
 
+		// Memory dependencies for 12 back-to-back renders
+		std::array<VkSubpassDependency, 2> dependencies;
+		dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+		dependencies[0].dstSubpass = 0;
+		dependencies[0].srcStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+		dependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		dependencies[0].srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
+		dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		dependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+
+		dependencies[1].srcSubpass = 0;
+		dependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
+		dependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		dependencies[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+		dependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		dependencies[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+		dependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+
 		VkRenderPassCreateInfo renderPassCreateInfo = vks::initializers::renderPassCreateInfo();
 		renderPassCreateInfo.attachmentCount = 2;
 		renderPassCreateInfo.pAttachments = osAttachments;
 		renderPassCreateInfo.subpassCount = 1;
 		renderPassCreateInfo.pSubpasses = &subpass;
+		renderPassCreateInfo.dependencyCount = static_cast<uint32_t>(dependencies.size());
+		renderPassCreateInfo.pDependencies = dependencies.data();
 
 		VK_CHECK_RESULT(vkCreateRenderPass(device, &renderPassCreateInfo, nullptr, &offscreenRenderPass));
 	}
@@ -337,20 +357,32 @@ public:
 	{
 		std::vector<VkDescriptorPoolSize> poolSizes = {
 			vks::initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, maxConcurrentFrames * 5),
-			vks::initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, maxConcurrentFrames * 4)
+			vks::initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, maxConcurrentFrames * 5)
 		};
 		VkDescriptorPoolCreateInfo descriptorPoolInfo = vks::initializers::descriptorPoolCreateInfo(poolSizes, maxConcurrentFrames * 4);
 		VK_CHECK_RESULT(vkCreateDescriptorPool(device, &descriptorPoolInfo, nullptr, &descriptorPool));
 
-		// Layout for Main Pass (Requires Array of 2 Samplers)
+		// 1. Layout for Main Pass (Only Set 0: UBO and 2 Shadow Maps)
 		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindingsMain = {
 			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0),
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1, 2)
+			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1),
+			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 2)
 		};
 		VkDescriptorSetLayoutCreateInfo descriptorLayoutMainInfo = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindingsMain);
 		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayoutMainInfo, nullptr, &descriptorSetLayoutMain));
 
-		// Layout for Offscreen Passes (Only needs the Uniform Buffer)
+		// 2. Layout for glTF Materials (Set 1: Sponza's built-in 5 texture bindings)
+		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindingsGLTF = {
+			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 0),
+			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1),
+			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 2),
+			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 3),
+			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 4)
+		};
+		VkDescriptorSetLayoutCreateInfo descriptorLayoutGLTFInfo = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindingsGLTF);
+		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayoutGLTFInfo, nullptr, &descriptorSetLayoutGLTF));
+
+		// 3. Layout for Offscreen Passes (Only needs the Uniform Buffer)
 		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindingsOffscreen = {
 			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0)
 		};
@@ -358,18 +390,17 @@ public:
 		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayoutOffscreenInfo, nullptr, &descriptorSetLayoutOffscreen));
 
 		for (auto i = 0; i < uniformBuffers.size(); i++) {
-			// Sponza Model (Main pass)
+			// Sponza Model (Main pass Set 0)
 			VkDescriptorSetAllocateInfo allocInfoMain = vks::initializers::descriptorSetAllocateInfo(descriptorPool, &descriptorSetLayoutMain, 1);
 			VK_CHECK_RESULT(vkAllocateDescriptorSets(device, &allocInfoMain, &descriptorSets[i].sponzaModel));
 
-			std::array<VkDescriptorImageInfo, 2> texDescriptors;
-			for (uint32_t l = 0; l < 2; l++) {
-				texDescriptors[l] = vks::initializers::descriptorImageInfo(shadowCubeMaps[l].sampler, shadowCubeMaps[l].view, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-			}
+			VkDescriptorImageInfo texDescriptor0 = vks::initializers::descriptorImageInfo(shadowCubeMaps[0].sampler, shadowCubeMaps[0].view, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+			VkDescriptorImageInfo texDescriptor1 = vks::initializers::descriptorImageInfo(shadowCubeMaps[1].sampler, shadowCubeMaps[1].view, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 			std::vector<VkWriteDescriptorSet> sponzaModelWriteDescriptorSets = {
 				vks::initializers::writeDescriptorSet(descriptorSets[i].sponzaModel, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, &uniformBuffers[i].sponzaModel.descriptor),
-				vks::initializers::writeDescriptorSet(descriptorSets[i].sponzaModel, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, texDescriptors.data(), 2)
+				vks::initializers::writeDescriptorSet(descriptorSets[i].sponzaModel, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, &texDescriptor0),
+				vks::initializers::writeDescriptorSet(descriptorSets[i].sponzaModel, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2, &texDescriptor1)
 			};
 			vkUpdateDescriptorSets(device, static_cast<uint32_t>(sponzaModelWriteDescriptorSets.size()), sponzaModelWriteDescriptorSets.data(), 0, nullptr);
 
@@ -387,8 +418,9 @@ public:
 
 	void preparePipelines()
 	{
-		// 3D scene pipeline layout
-		VkPipelineLayoutCreateInfo pipelineLayoutCreateInfoMain = vks::initializers::pipelineLayoutCreateInfo(&descriptorSetLayoutMain, 1);
+		// 1. CONNECT BOTH LAYOUTS TO THE PIPELINE!
+		std::vector<VkDescriptorSetLayout> setLayouts = { descriptorSetLayoutMain, descriptorSetLayoutGLTF };
+		VkPipelineLayoutCreateInfo pipelineLayoutCreateInfoMain = vks::initializers::pipelineLayoutCreateInfo(setLayouts.data(), static_cast<uint32_t>(setLayouts.size()));
 		VK_CHECK_RESULT(vkCreatePipelineLayout(device, &pipelineLayoutCreateInfoMain, nullptr, &pipelineLayouts.sponzaMain));
 
 		// Offscreen pipeline layout
@@ -424,10 +456,12 @@ public:
 		pipelineCI.pDynamicState = &dynamicState;
 		pipelineCI.stageCount = static_cast<uint32_t>(shaderStages.size());
 		pipelineCI.pStages = shaderStages.data();
-		pipelineCI.pVertexInputState = vkglTF::Vertex::getPipelineVertexInputState({ vkglTF::VertexComponent::Position, vkglTF::VertexComponent::Color, vkglTF::VertexComponent::Normal });
+
+		pipelineCI.pVertexInputState = vkglTF::Vertex::getPipelineVertexInputState({ vkglTF::VertexComponent::Position, vkglTF::VertexComponent::UV, vkglTF::VertexComponent::Color, vkglTF::VertexComponent::Normal });
 		VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, pipelineCache, 1, &pipelineCI, nullptr, &pipelines.sponzaMain));
 
 		// Offscreen pipeline
+		rasterizationState.cullMode = VK_CULL_MODE_NONE; // Fix to stop light leaking through thin walls
 		shaderStages[0] = loadShader(getShadersPath() + "shadowmappingomni/offscreen.vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
 		shaderStages[1] = loadShader(getShadersPath() + "shadowmappingomni/offscreen.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
 		pipelineCI.layout = pipelineLayouts.offscreen;
@@ -484,7 +518,7 @@ public:
 	void updateCubeFace(uint32_t lightIndex, uint32_t faceIndex, VkCommandBuffer commandBuffer)
 	{
 		VkClearValue clearValues[2];
-		clearValues[0].color = { { 0.0f, 0.0f, 0.0f, 1.0f } };
+		clearValues[0].color = { { zFar, zFar, zFar, 1.0f } }; // RESTORED ZFAR SKY CLEAR FIX
 		clearValues[1].depthStencil = { 1.0f, 0 };
 
 		VkRenderPassBeginInfo renderPassBeginInfo = vks::initializers::renderPassBeginInfo();
@@ -511,7 +545,6 @@ public:
 		vkCmdPushConstants(commandBuffer, pipelineLayouts.offscreen, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(glm::mat4), &viewMatrix);
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.offscreen);
 
-		// Bind the correct light's offscreen descriptor set!
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayouts.offscreen, 0, 1, &descriptorSets[currentBuffer].offscreen[lightIndex], 0, nullptr);
 
 		models.sponza.draw(commandBuffer);
@@ -528,7 +561,6 @@ public:
 
 		/*
 			Pass 1: Offscreen Rendering
-			Loop through both lights and all 6 faces (12 depth renders total)
 		*/
 		{
 			VkViewport viewport = vks::initializers::viewport((float)offscreenImageSize, (float)offscreenImageSize, 0.0f, 1.0f);
@@ -570,7 +602,9 @@ public:
 
 			vkCmdBindPipeline(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelines.sponzaMain);
 			vkCmdBindDescriptorSets(cmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayouts.sponzaMain, 0, 1, &descriptorSets[currentBuffer].sponzaModel, 0, nullptr);
-			models.sponza.draw(cmdBuffer);
+
+			// 2. TELL THE LOADER TO AUTO-BIND ITS TEXTURES INTO SET 1
+			models.sponza.draw(cmdBuffer, vkglTF::RenderFlags::BindImages, pipelineLayouts.sponzaMain, 1);
 
 			drawUI(cmdBuffer);
 
