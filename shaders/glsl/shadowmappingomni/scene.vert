@@ -1,7 +1,7 @@
 #version 450
 
 layout (location = 0) in vec3 inPos;
-layout (location = 1) in vec2 inUV;     // Catch the UVs
+layout (location = 1) in vec2 inUV;
 layout (location = 2) in vec3 inColor;
 layout (location = 3) in vec3 inNormal;
 
@@ -19,7 +19,8 @@ layout (location = 2) out vec3 outEyePos;
 layout (location = 3) out vec3 outWorldPos;
 layout (location = 4) out vec4 outLightPos0;
 layout (location = 5) out vec4 outLightPos1;
-layout (location = 6) out vec2 outUV;   // Pass them to Fragment
+layout (location = 6) out vec2 outUV;
+layout (location = 7) out float outIsReflection; // <--- NEW
 
 out gl_PerVertex 
 {
@@ -40,4 +41,7 @@ void main()
 	
 	outLightPos0 = ubo.lightPos[0];
 	outLightPos1 = ubo.lightPos[1];
+	
+	// HACK: Check if the Y scale is negative to detect the reflection pass!
+	outIsReflection = (ubo.model[1][1] < 0.0) ? 1.0 : 0.0;
 }
