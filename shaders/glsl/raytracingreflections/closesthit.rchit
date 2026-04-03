@@ -1,76 +1,149 @@
 #version 460
 #extension GL_EXT_ray_tracing : require
 #extension GL_EXT_nonuniform_qualifier : enable
+#extension GL_EXT_shader_explicit_arithmetic_types_int64 : require
+// REQUIRED: Allows us to cast 64-bit ints into memory buffers!
+#extension GL_EXT_buffer_reference2 : require
 
-struct RayPayload {
-	vec3 color;
-	float distance;
-	vec3 normal;
-	float reflector;
-};
-
-layout(location = 0) rayPayloadInEXT RayPayload rayPayload;
+layout(location = 0) rayPayloadInEXT vec3 hitValue;
+layout(location = 1) rayPayloadEXT bool isShadowed; // Our new shadow backpack!
+layout(binding = 3, set = 0) uniform sampler2D textures[];
 
 hitAttributeEXT vec2 attribs;
 
 layout(binding = 0, set = 0) uniform accelerationStructureEXT topLevelAS;
-layout(binding = 2, set = 0) uniform UBO 
-{
+
+
+// Update this in raygen, anyhit, and closesthit!
+layout(binding = 2, set = 0) uniform UBO {
 	mat4 viewInverse;
 	mat4 projInverse;
-	vec4 lightPos;
+	vec4 lightPos[2]; 
 	int vertexSize;
+	int padding;
+	uint64_t vertexAddressSponza;
+	uint64_t indexAddressSponza;
+	uint64_t vertexAddressPlane;
+	uint64_t indexAddressPlane;
+	uint64_t textureIndexAddressSponza; // <--- ADDED
 } ubo;
-layout(binding = 3, set = 0) buffer Vertices { vec4 v[]; } vertices;
-layout(binding = 4, set = 0) buffer Indices { uint i[]; } indices;
 
-struct Vertex
-{
-  vec3 pos;
-  vec3 normal;
-  vec2 uv;
-  vec4 color;
-  vec4 _pad0; 
-  vec4 _pad1;
+// Define the raw memory layout
+layout(buffer_reference, std430, buffer_reference_align = 4) buffer Vertices { float v[]; };
+layout(buffer_reference, std430, buffer_reference_align = 4) buffer Indices  { uint i[];  };
+layout(buffer_reference, std430, buffer_reference_align = 4) buffer TexIndices { int id[]; };
+
+struct Vertex {
+	vec3 pos;
+	vec3 normal;
+	vec2 uv; // ADDED
 };
 
-Vertex unpack(uint index)
-{
-	// Unpack the vertices from the SSBO using the glTF vertex structure
-	// The multiplier is the size of the vertex divided by four float components (=16 bytes)
-	const int m = ubo.vertexSize / 16;
-
-	vec4 d0 = vertices.v[m * index + 0];
-	vec4 d1 = vertices.v[m * index + 1];
-	vec4 d2 = vertices.v[m * index + 2];
-
-	Vertex v;
-	v.pos = d0.xyz;
-	v.normal = vec3(d0.w, d1.x, d1.y);
-	v.color = vec4(d2.x, d2.y, d2.z, 1.0);
-
+// Helper function to extract a Vertex from the raw memory float array
+Vertex unpackVertex(Vertices verts, uint index) {
+	// In vkglTF::Vertex, position is floats 0,1,2 and normal is floats 3,4,5
+	uint floatOffset = index * (ubo.vertexSize / 4);
+	
+Vertex v;
+	v.pos = vec3(verts.v[floatOffset], verts.v[floatOffset + 1], verts.v[floatOffset + 2]);
+	v.normal = vec3(verts.v[floatOffset + 3], verts.v[floatOffset + 4], verts.v[floatOffset + 5]);
+	// Extract UVs from floats 6 and 7
+	v.uv = vec2(verts.v[floatOffset + 6], verts.v[floatOffset + 7]); 
 	return v;
 }
 
 void main()
 {
-	ivec3 index = ivec3(indices.i[3 * gl_PrimitiveID], indices.i[3 * gl_PrimitiveID + 1], indices.i[3 * gl_PrimitiveID + 2]);
+	Vertices verts;
+	Indices inds;
 
-	Vertex v0 = unpack(index.x);
-	Vertex v1 = unpack(index.y);
-	Vertex v2 = unpack(index.z);
+	// 1. Identify which memory block we hit based on the TLAS Custom Index
+	if (gl_InstanceCustomIndexEXT == 0) { 
+		// We hit Sponza!
+		verts = Vertices(ubo.vertexAddressSponza);
+		inds  = Indices(ubo.indexAddressSponza);
+	} else {                              
+		// We hit the Mirror Plane!
+		verts = Vertices(ubo.vertexAddressPlane);
+		inds  = Indices(ubo.indexAddressPlane);
+	}
 
-	// Interpolate normal
+	// 2. Fetch the triangle indices
+	ivec3 index = ivec3(inds.i[3 * gl_PrimitiveID], inds.i[3 * gl_PrimitiveID + 1], inds.i[3 * gl_PrimitiveID + 2]);
+
+	// 3. Unpack the three vertices of the triangle we hit
+	Vertex v0 = unpackVertex(verts, index.x);
+	Vertex v1 = unpackVertex(verts, index.y);
+	Vertex v2 = unpackVertex(verts, index.z);
+
+	// 4. Calculate exactly where on the triangle we hit using Barycentric coordinates
 	const vec3 barycentricCoords = vec3(1.0f - attribs.x - attribs.y, attribs.x, attribs.y);
 	vec3 normal = normalize(v0.normal * barycentricCoords.x + v1.normal * barycentricCoords.y + v2.normal * barycentricCoords.z);
 
-	// Basic lighting
-	vec3 lightVector = normalize(ubo.lightPos.xyz);
-	float dot_product = max(dot(lightVector, normal), 0.6);
-	rayPayload.color = v0.color.rgb * vec3(dot_product);
-	rayPayload.distance = gl_RayTmaxEXT;
-	rayPayload.normal = normal;
+	// Convert normal from Object Space to World Space
+	vec3 worldNormal = normalize(vec3(gl_ObjectToWorldEXT * vec4(normal, 0.0)));
+	vec3 worldPos = gl_WorldRayOriginEXT + gl_WorldRayDirectionEXT * gl_HitTEXT;
+	vec2 uv = v0.uv * barycentricCoords.x + v1.uv * barycentricCoords.y + v2.uv * barycentricCoords.z;
 
-	// Objects with full white vertex color are treated as reflectors
-	rayPayload.reflector = ((v0.color.r == 1.0f) && (v0.color.g == 1.0f) && (v0.color.b == 1.0f)) ? 1.0f : 0.0f; 
+	// 5. THE MAGIC: Are we the Mirror, or are we Sponza?
+	if (gl_InstanceCustomIndexEXT == 1) { 
+		
+		// WE HIT THE MIRROR! Calculate bounce angle...
+		vec3 reflectionDir = reflect(gl_WorldRayDirectionEXT, worldNormal);
+		
+		uint rayFlags = gl_RayFlagsNoneEXT;		
+
+		// Shoot the recursive ray!
+		traceRayEXT(topLevelAS, rayFlags, 0xFF, 0, 0, 0, worldPos, 0.01, reflectionDir, 1000.0, 0);
+		
+		// hitValue now contains the exact color of whatever the bounced ray hit!
+		// No tint is applied, making it a perfect, physically accurate mirror.
+
+	} else {
+		// WE HIT SPONZA!
+		// 1. Check which texture this specific triangle uses
+		TexIndices texInds = TexIndices(ubo.textureIndexAddressSponza);
+		int texID = texInds.id[gl_PrimitiveID];
+		
+		vec3 baseColor = vec3(0.8); // Default clay color
+		if (texID >= 0) {
+			// Dynamically sample from the massive array!
+			// MUST use nonuniformEXT because rays hit different materials!
+			baseColor = texture(textures[nonuniformEXT(texID)], uv).rgb;
+		}
+		
+		// 2. Ambient Light (Declared only ONCE!)
+		float ambientStrength = 0.05; 
+		vec3 finalColor = ambientStrength * baseColor;
+
+		// 3. Lighting Loop
+		for(int i = 0; i < 2; i++) {
+			vec3 lightPos = ubo.lightPos[i].xyz;
+			float brightness = ubo.lightPos[i].w;
+			
+			vec3 lightDir = normalize(lightPos - worldPos);
+			float dist = length(lightPos - worldPos);
+			
+			isShadowed = true; 
+			
+			// Removed gl_RayFlagsOpaqueEXT so shadows respect the leaf gaps!
+			traceRayEXT(topLevelAS, gl_RayFlagsTerminateOnFirstHitEXT | gl_RayFlagsSkipClosestHitShaderEXT, 
+						0xFF, 0, 0, 1, worldPos, 0.001, lightDir, dist, 1);
+
+			// Calculate the light exactly as if it hit
+			float attenuation = 1.0 / (dist * dist);
+			vec3 diffuse = vec3(brightness * attenuation) * max(dot(worldNormal, lightDir), 0.0);
+			vec3 diffuseColor = diffuse * baseColor;
+
+			// Apply the shadow opacity trick from rasterization
+			float shadow = isShadowed ? 0.5 : 1.0; 
+			
+			finalColor += diffuseColor * shadow;
+		}
+
+		// Tone mapping
+		finalColor = finalColor / (finalColor + vec3(1.0));
+		
+		hitValue = finalColor;
+	}
 }
