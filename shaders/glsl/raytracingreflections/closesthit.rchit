@@ -6,7 +6,8 @@
 #extension GL_EXT_buffer_reference2 : require
 
 layout(location = 0) rayPayloadInEXT vec3 hitValue;
-layout(location = 1) rayPayloadEXT bool isShadowed; // Our new shadow backpack!
+// (Removed the isShadowed payload)
+
 layout(binding = 3, set = 0) uniform sampler2D textures[];
 
 hitAttributeEXT vec2 attribs;
@@ -25,7 +26,7 @@ layout(binding = 2, set = 0) uniform UBO {
 	uint64_t indexAddressSponza;
 	uint64_t vertexAddressPlane;
 	uint64_t indexAddressPlane;
-	uint64_t textureIndexAddressSponza; // <--- ADDED
+	uint64_t textureIndexAddressSponza; 
 } ubo;
 
 // Define the raw memory layout
@@ -36,15 +37,14 @@ layout(buffer_reference, std430, buffer_reference_align = 4) buffer TexIndices {
 struct Vertex {
 	vec3 pos;
 	vec3 normal;
-	vec2 uv; // ADDED
+	vec2 uv;
 };
 
 // Helper function to extract a Vertex from the raw memory float array
 Vertex unpackVertex(Vertices verts, uint index) {
 	// In vkglTF::Vertex, position is floats 0,1,2 and normal is floats 3,4,5
 	uint floatOffset = index * (ubo.vertexSize / 4);
-	
-Vertex v;
+	Vertex v;
 	v.pos = vec3(verts.v[floatOffset], verts.v[floatOffset + 1], verts.v[floatOffset + 2]);
 	v.normal = vec3(verts.v[floatOffset + 3], verts.v[floatOffset + 4], verts.v[floatOffset + 5]);
 	// Extract UVs from floats 6 and 7
@@ -82,6 +82,7 @@ void main()
 
 	// Convert normal from Object Space to World Space
 	vec3 worldNormal = normalize(vec3(gl_ObjectToWorldEXT * vec4(normal, 0.0)));
+
 	vec3 worldPos = gl_WorldRayOriginEXT + gl_WorldRayDirectionEXT * gl_HitTEXT;
 	vec2 uv = v0.uv * barycentricCoords.x + v1.uv * barycentricCoords.y + v2.uv * barycentricCoords.z;
 
@@ -90,12 +91,11 @@ void main()
 		
 		// WE HIT THE MIRROR! Calculate bounce angle...
 		vec3 reflectionDir = reflect(gl_WorldRayDirectionEXT, worldNormal);
-		
 		uint rayFlags = gl_RayFlagsNoneEXT;		
 
 		// Shoot the recursive ray!
 		traceRayEXT(topLevelAS, rayFlags, 0xFF, 0, 0, 0, worldPos, 0.01, reflectionDir, 1000.0, 0);
-		
+
 		// hitValue now contains the exact color of whatever the bounced ray hit!
 		// No tint is applied, making it a perfect, physically accurate mirror.
 
@@ -112,11 +112,11 @@ void main()
 			baseColor = texture(textures[nonuniformEXT(texID)], uv).rgb;
 		}
 		
-		// 2. Ambient Light (Declared only ONCE!)
+		// 2. Ambient Light
 		float ambientStrength = 0.05; 
 		vec3 finalColor = ambientStrength * baseColor;
 
-		// 3. Lighting Loop
+		// 3. Lighting Loop (NO SHADOWS)
 		for(int i = 0; i < 2; i++) {
 			vec3 lightPos = ubo.lightPos[i].xyz;
 			float brightness = ubo.lightPos[i].w;
@@ -124,21 +124,13 @@ void main()
 			vec3 lightDir = normalize(lightPos - worldPos);
 			float dist = length(lightPos - worldPos);
 			
-			isShadowed = true; 
-			
-			// Removed gl_RayFlagsOpaqueEXT so shadows respect the leaf gaps!
-			traceRayEXT(topLevelAS, gl_RayFlagsTerminateOnFirstHitEXT | gl_RayFlagsSkipClosestHitShaderEXT, 
-						0xFF, 0, 0, 1, worldPos, 0.001, lightDir, dist, 1);
-
-			// Calculate the light exactly as if it hit
+			// Calculate the light exactly as if it hit (100% visibility)
 			float attenuation = 1.0 / (dist * dist);
 			vec3 diffuse = vec3(brightness * attenuation) * max(dot(worldNormal, lightDir), 0.0);
 			vec3 diffuseColor = diffuse * baseColor;
-
-			// Apply the shadow opacity trick from rasterization
-			float shadow = isShadowed ? 0.5 : 1.0; 
 			
-			finalColor += diffuseColor * shadow;
+			// Add light directly to the final color without the shadow multiplier
+			finalColor += diffuseColor;
 		}
 
 		// Tone mapping
